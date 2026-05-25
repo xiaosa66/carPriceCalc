@@ -13,18 +13,19 @@
   </script>
   <style>
     :root {
-      --bg: #f6f8fb;
+      --bg: #f7f8fa;
       --panel: #ffffff;
-      --ink: #17202a;
-      --muted: #687385;
-      --line: #dbe2ea;
-      --accent: #0f766e;
-      --accent-strong: #0b5f59;
-      --accent-soft: #e6f4f1;
-      --warn: #b45309;
-      --blue: #2563eb;
-      --shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
-      --radius: 8px;
+      --ink: rgba(0, 0, 0, 0.9);
+      --muted: #4f586b;
+      --subtle: #8a93a3;
+      --line: #e6e9f0;
+      --accent: #0052d9;
+      --accent-strong: #003f9f;
+      --accent-soft: #eef4ff;
+      --warn: #9f5a00;
+      --blue: #0052d9;
+      --shadow: 0 18px 44px rgba(16, 24, 40, 0.06);
+      --radius: 4px;
     }
 
     * {
@@ -34,11 +35,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       color: var(--ink);
-      background:
-        linear-gradient(180deg, #eef5f7 0, rgba(238, 245, 247, 0) 300px),
-        var(--bg);
+      background: linear-gradient(180deg, #ffffff 0, #f7f8fa 420px, #f7f8fa 100%);
     }
 
     button,
@@ -48,24 +47,25 @@
     }
 
     .shell {
-      width: min(1440px, calc(100vw - 28px));
+      width: min(1480px, calc(100vw - 32px));
       margin: 0 auto;
-      padding: 28px 0 36px;
+      padding: 42px 0 26px;
     }
 
     .topbar {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 22px;
+      gap: 28px;
+      margin-bottom: 28px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(26px, 4vw, 42px);
-      line-height: 1.08;
+      margin: 0 0 10px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
       letter-spacing: 0;
+      font-weight: 600;
     }
 
     .lede {
@@ -73,7 +73,7 @@
       max-width: 760px;
       color: var(--muted);
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.75;
     }
 
     .actions {
@@ -89,25 +89,26 @@
       border-radius: var(--radius);
       background: var(--panel);
       color: var(--ink);
-      padding: 0 13px;
+      padding: 0 16px;
       cursor: pointer;
-      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      box-shadow: none;
+      transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
     }
 
     .btn:hover {
-      transform: translateY(-1px);
-      border-color: #aebdcc;
+      border-color: #b8c0cc;
+      color: #000;
     }
 
     .btn.primary {
-      background: var(--accent);
-      border-color: var(--accent);
+      background: #111827;
+      border-color: #111827;
       color: white;
     }
 
     .btn.primary:hover {
-      background: var(--accent-strong);
+      background: #000;
+      border-color: #000;
     }
 
     .workspace {
@@ -155,11 +156,11 @@
 
     th {
       width: 184px;
-      background: #f9fbfd;
+      background: #fafbfc;
       text-align: left;
       padding: 12px 12px;
       font-weight: 700;
-      color: #233041;
+      color: #1f2937;
     }
 
     th.metric {
@@ -167,7 +168,7 @@
       position: sticky;
       left: 0;
       z-index: 3;
-      background: #f3f7fa;
+      background: #f4f6f8;
     }
 
     td {
@@ -243,8 +244,8 @@
     }
 
     .icon-btn:hover {
-      border-color: #ef4444;
-      color: #b91c1c;
+      border-color: #b8c0cc;
+      color: #000;
     }
 
     .money-field {
@@ -293,8 +294,8 @@
 
     .total {
       background: var(--accent-soft);
-      border-color: #b7ded7;
-      color: #0a514d;
+      border-color: #c9dbff;
+      color: #003f9f;
       font-size: 18px;
     }
 
@@ -303,7 +304,7 @@
     }
 
     .subsidy {
-      color: #047857;
+      color: #14532d;
     }
 
     .capped {
@@ -311,8 +312,8 @@
     }
 
     .best {
-      outline: 2px solid rgba(15, 118, 110, 0.32);
-      background: #eefaf7;
+      outline: 2px solid rgba(0, 82, 217, 0.18);
+      background: #f3f7ff;
     }
 
     .hint {
@@ -383,46 +384,46 @@
     }
 
     .contact-help {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
       z-index: 10;
     }
 
     .contact-trigger {
       display: grid;
       place-items: center;
-      width: 42px;
-      height: 42px;
-      border: 1px solid #b9c7d6;
+      width: 28px;
+      height: 28px;
+      border: 1px solid #cfd5de;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.96);
-      color: var(--accent-strong);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      background: #fff;
+      color: var(--muted);
+      box-shadow: none;
       cursor: help;
-      font-size: 20px;
+      font-size: 15px;
       font-weight: 800;
       line-height: 1;
-      backdrop-filter: blur(10px);
     }
 
     .contact-trigger:hover,
     .contact-trigger:focus-visible {
-      outline: 2px solid rgba(15, 118, 110, 0.28);
+      color: #000;
+      border-color: #111827;
+      outline: 2px solid rgba(0, 82, 217, 0.16);
       outline-offset: 3px;
     }
 
     .contact-popover {
       position: absolute;
       right: 0;
-      bottom: 52px;
+      bottom: 40px;
       width: 178px;
       padding: 10px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.94);
-      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
-      backdrop-filter: blur(10px);
+      background: #fff;
+      box-shadow: 0 18px 46px rgba(16, 24, 40, 0.16);
       opacity: 0;
       visibility: hidden;
       transform: translateY(8px);
@@ -449,6 +450,7 @@
     }
 
     .contact-title {
+      display: block;
       margin: 8px 0 2px;
       font-weight: 800;
       font-size: 14px;
@@ -456,10 +458,35 @@
     }
 
     .contact-subtitle {
+      display: block;
       margin: 0;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.45;
+    }
+
+    .site-footer {
+      width: min(1480px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 18px 0 34px;
+      border-top: 1px solid var(--line);
+      color: var(--subtle);
+      font-size: 12px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-contact {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
     }
 
     @media (max-width: 760px) {
@@ -497,19 +524,14 @@
         min-width: 660px;
       }
 
-      .contact-help {
-        right: 10px;
-        bottom: 10px;
-      }
-
       .contact-trigger {
-        width: 38px;
-        height: 38px;
-        font-size: 18px;
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
       }
 
       .contact-popover {
-        bottom: 48px;
+        bottom: 40px;
         width: 132px;
         padding: 8px;
       }
@@ -520,6 +542,10 @@
 
       .contact-subtitle {
         font-size: 11px;
+      }
+
+      .site-footer {
+        width: min(100% - 20px, 1180px);
       }
     }
   </style>
@@ -573,14 +599,22 @@
     </section>
   </main>
 
-  <aside class="contact-help" aria-label="作者联系方式">
-    <button class="contact-trigger" id="contactTrigger" type="button" aria-label="查看作者联系方式" aria-describedby="contactPopover">?</button>
-    <div class="contact-popover" id="contactPopover" role="dialog" aria-label="我的联系方式">
-      <img id="contactQr" data-src="assets/xiaosa_wechat.jpg" alt="作者微信二维码">
-      <p class="contact-title">我的联系方式</p>
-      <p class="contact-subtitle">算的不对？请联系作者更新</p>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>Car landing price calculator</span>
+      <span class="footer-contact">
+        算的不对？请联系作者更新
+        <span class="contact-help" aria-label="作者联系方式">
+          <button class="contact-trigger" id="contactTrigger" type="button" aria-label="查看作者联系方式" aria-describedby="contactPopover">?</button>
+          <span class="contact-popover" id="contactPopover" role="dialog" aria-label="我的联系方式">
+            <img id="contactQr" data-src="assets/xiaosa_wechat.jpg" alt="作者微信二维码">
+            <span class="contact-title">我的联系方式</span>
+            <span class="contact-subtitle">算的不对？请联系作者更新</span>
+          </span>
+        </span>
+      </span>
     </div>
-  </aside>
+  </footer>
 
   <template id="moneyInputTemplate">
     <div class="money-field">
