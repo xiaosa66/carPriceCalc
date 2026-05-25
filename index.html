@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>汽车落地价计算器</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #687385;
+      --line: #dbe2ea;
+      --accent: #0f766e;
+      --accent-strong: #0b5f59;
+      --accent-soft: #e6f4f1;
+      --warn: #b45309;
+      --blue: #2563eb;
+      --shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #eef5f7 0, rgba(238, 245, 247, 0) 300px),
+        var(--bg);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1440px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 0 13px;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: #aebdcc;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-strong);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .compare-wrap,
+    .side-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .compare-wrap {
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      scrollbar-color: #b9c5d1 transparent;
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    th {
+      width: 184px;
+      background: #f9fbfd;
+      text-align: left;
+      padding: 12px 12px;
+      font-weight: 700;
+      color: #233041;
+    }
+
+    th.metric {
+      width: 138px;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: #f3f7fa;
+    }
+
+    td {
+      padding: 10px;
+      background: white;
+    }
+
+    tbody th {
+      font-size: 14px;
+      color: #39485a;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .car-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 32px;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .car-title {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px 9px;
+      width: 100%;
+      color: var(--ink);
+      background: white;
+    }
+
+    .select-field {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0 10px;
+      color: var(--ink);
+      background: white;
+    }
+
+    .check-field {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0 11px;
+      color: var(--ink);
+      background: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-field input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      color: #596678;
+    }
+
+    .icon-btn:hover {
+      border-color: #ef4444;
+      color: #b91c1c;
+    }
+
+    .money-field {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .money-field span {
+      flex: 0 0 auto;
+      padding-left: 10px;
+      color: var(--muted);
+    }
+
+    .money-field input {
+      min-width: 0;
+      width: 100%;
+      border: 0;
+      outline: 0;
+      padding: 9px 9px 9px 6px;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .value {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 40px;
+      padding: 9px 10px;
+      border-radius: var(--radius);
+      background: #f7fafc;
+      border: 1px solid #e5ebf1;
+      font-weight: 700;
+    }
+
+    .value small {
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .total {
+      background: var(--accent-soft);
+      border-color: #b7ded7;
+      color: #0a514d;
+      font-size: 18px;
+    }
+
+    .saving {
+      color: var(--blue);
+    }
+
+    .subsidy {
+      color: #047857;
+    }
+
+    .capped {
+      color: var(--warn);
+    }
+
+    .best {
+      outline: 2px solid rgba(15, 118, 110, 0.32);
+      background: #eefaf7;
+    }
+
+    .hint {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .side-panel {
+      padding: 14px;
+      position: sticky;
+      top: 12px;
+    }
+
+    .side-panel h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .formula {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .formula p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 12px;
+    }
+
+    .formula strong {
+      color: var(--ink);
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .summary-list li {
+      display: grid;
+      gap: 3px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfe;
+    }
+
+    .summary-name {
+      font-weight: 700;
+    }
+
+    .summary-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .summary-price {
+      color: #0a514d;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 22px;
+      }
+
+      th.metric {
+        position: static;
+      }
+
+      table {
+        min-width: 660px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <h1>汽车落地价计算器</h1>
+        <p class="lede">输入每辆车的裸车发票价和保险费用，自动计算新能源购置税减免、杭州置换/报废补贴和嘉兴补贴，并横向对比最终落地价。</p>
+      </div>
+      <div class="actions" aria-label="操作">
+        <button class="btn" id="resetBtn" type="button">重置示例</button>
+        <button class="btn primary" id="addCarBtn" type="button">＋ 添加对比列</button>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <div class="compare-wrap">
+        <div class="table-scroll">
+          <table aria-label="汽车落地价格对比表">
+            <thead>
+              <tr id="headerRow">
+                <th class="metric">项目</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="side-panel" aria-label="计算说明和排名">
+        <h2>购置税规则</h2>
+        <div class="formula">
+          <p><strong>理论购置税</strong> = 裸车发票价 ÷ 1.13 × 10%</p>
+          <p><strong>减免额</strong> = min(理论购置税 × 50%, 15000)</p>
+          <p><strong>应缴购置税</strong> = 理论购置税 - 减免额</p>
+        </div>
+
+        <h2>补贴规则</h2>
+        <div class="formula">
+          <p><strong>杭州报废更新</strong>：新能源 12% 最高 2 万；2.0L 及以下燃油 10% 最高 1.5 万</p>
+          <p><strong>杭州新购</strong>：不计置换/报废补贴；选择置换或报废时按对应规则计算</p>
+          <p><strong>杭州置换更新</strong>：新能源 8% 最高 1.5 万；2.0L 及以下燃油 6% 最高 1.3 万，超过 30 万最高 6000</p>
+          <p><strong>嘉兴补贴</strong>：勾选后按开票价 2% 计算</p>
+        </div>
+
+        <h2>落地价排名</h2>
+        <ol class="summary-list" id="summaryList"></ol>
+      </aside>
+    </section>
+  </main>
+
+  <template id="moneyInputTemplate">
+    <div class="money-field">
+      <span>¥</span>
+      <input type="number" min="0" step="1000" inputmode="decimal">
+    </div>
+  </template>
+
+  <script>
+    const MAX_REDUCTION = 15000;
+    const VAT_RATE = 1.13;
+    const PURCHASE_TAX_RATE = 0.10;
+    const DISCOUNT_RATE = 0.50;
+
+    const defaultCars = [
+      { name: "示例：133206开票", price: 133206, insurance: 6000, vehicleType: "nev", purchaseMode: "transfer", hasJiaxingSubsidy: true },
+      { name: "例1：30万新能源车", price: 300000, insurance: 6500, vehicleType: "nev", purchaseMode: "transfer", hasJiaxingSubsidy: true },
+      { name: "例2：40万新能源车", price: 400000, insurance: 7800, vehicleType: "nev", purchaseMode: "transfer", hasJiaxingSubsidy: true }
+    ];
+
+    let cars = structuredClone(defaultCars);
+
+    const headerRow = document.querySelector("#headerRow");
+    const tableBody = document.querySelector("#tableBody");
+    const summaryList = document.querySelector("#summaryList");
+    const moneyInputTemplate = document.querySelector("#moneyInputTemplate");
+
+    const rows = [
+      { key: "price", label: "裸车发票价", type: "input" },
+      { key: "vehicleType", label: "车辆类型", type: "select" },
+      { key: "purchaseMode", label: "购车方式", type: "select" },
+      { key: "insurance", label: "保险", type: "input" },
+      { key: "hasJiaxingSubsidy", label: "嘉兴补贴", type: "checkbox" },
+      { key: "taxBase", label: "不含税价", type: "value" },
+      { key: "theoryTax", label: "理论购置税", type: "value", hint: "不含税价 × 10%" },
+      { key: "reduction", label: "减免额", type: "value", className: "saving", hint: "半额减免，最高 15000 元" },
+      { key: "purchaseTax", label: "应缴购置税", type: "value", hint: "理论购置税 - 减免额" },
+      { key: "tradeSubsidy", label: "杭州补贴", type: "value", className: "subsidy", hint: "按新购/置换/报废计算" },
+      { key: "localSubsidy", label: "嘉兴补贴金额", type: "value", className: "subsidy", hint: "勾选后开票价 × 2%" },
+      { key: "total", label: "落地价合计", type: "value", className: "total", hint: "开票价 + 保险 + 购置税 - 各项补贴" }
+    ];
+
+    const selectOptions = {
+      vehicleType: [
+        ["nev", "新能源车"],
+        ["fuel", "2.0L及以下燃油车"],
+        ["other", "其他车型"]
+      ],
+      purchaseMode: [
+        ["new", "新购"],
+        ["transfer", "置换"],
+        ["scrap", "报废"]
+      ]
+    };
+
+    function calculate(car) {
+      const price = Number(car.price) || 0;
+      const insurance = Number(car.insurance) || 0;
+      const taxBase = price / VAT_RATE;
+      const theoryTax = taxBase * PURCHASE_TAX_RATE;
+      const halfReduction = theoryTax * DISCOUNT_RATE;
+      const reduction = Math.min(halfReduction, MAX_REDUCTION);
+      const purchaseTax = Math.max(theoryTax - reduction, 0);
+      const tradeSubsidy = calculateTradeSubsidy(price, car.vehicleType, car.purchaseMode);
+      const localSubsidy = car.hasJiaxingSubsidy ? price * 0.02 : 0;
+      const roundedPurchaseTax = Math.round(purchaseTax);
+      const roundedTradeSubsidy = Math.round(tradeSubsidy);
+      const roundedLocalSubsidy = Math.round(localSubsidy);
+      const total = Math.round(price) + Math.round(insurance) + roundedPurchaseTax - roundedTradeSubsidy - roundedLocalSubsidy;
+
+      return {
+        price,
+        insurance,
+        taxBase,
+        theoryTax,
+        reduction,
+        purchaseTax: roundedPurchaseTax,
+        tradeSubsidy: roundedTradeSubsidy,
+        localSubsidy: roundedLocalSubsidy,
+        total,
+        capped: halfReduction > MAX_REDUCTION
+      };
+    }
+
+    function calculateTradeSubsidy(price, vehicleType = "nev", purchaseMode = "transfer") {
+      if (!price || purchaseMode === "new" || vehicleType === "other") return 0;
+
+      if (purchaseMode === "scrap") {
+        if (vehicleType === "nev") return Math.min(price * 0.12, 20000);
+        if (vehicleType === "fuel") return Math.min(price * 0.10, 15000);
+      }
+
+      if (purchaseMode === "transfer") {
+        if (vehicleType === "nev") return Math.min(price * 0.08, 15000);
+        if (vehicleType === "fuel") return Math.min(price * 0.06, price > 300000 ? 6000 : 13000);
+      }
+
+      return 0;
+    }
+
+    function currency(value) {
+      return new Intl.NumberFormat("zh-CN", {
+        style: "currency",
+        currency: "CNY",
+        maximumFractionDigits: 0
+      }).format(Math.round(value || 0));
+    }
+
+    function makeMoneyInput(carIndex, key) {
+      const node = moneyInputTemplate.content.firstElementChild.cloneNode(true);
+      const input = node.querySelector("input");
+      input.value = cars[carIndex][key] || "";
+      input.setAttribute("aria-label", `${cars[carIndex].name}${key === "price" ? "裸车发票价" : "保险"}`);
+      input.addEventListener("input", () => {
+        cars[carIndex][key] = Number(input.value) || 0;
+        updateCalculations();
+      });
+      return node;
+    }
+
+    function makeSelect(carIndex, key) {
+      const select = document.createElement("select");
+      select.className = "select-field";
+      select.setAttribute("aria-label", `${cars[carIndex].name}${key === "vehicleType" ? "车辆类型" : "购车方式"}`);
+      selectOptions[key].forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        select.append(option);
+      });
+      select.value = cars[carIndex][key] || selectOptions[key][0][0];
+      select.addEventListener("change", () => {
+        cars[carIndex][key] = select.value;
+        updateCalculations();
+      });
+      return select;
+    }
+
+    function makeCheckbox(carIndex, key) {
+      const label = document.createElement("label");
+      label.className = "check-field";
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = Boolean(cars[carIndex][key]);
+      input.setAttribute("aria-label", `${cars[carIndex].name}是否享受嘉兴补贴`);
+      input.addEventListener("change", () => {
+        cars[carIndex][key] = input.checked;
+        updateCalculations();
+      });
+
+      const text = document.createElement("span");
+      text.textContent = "享受 2%";
+
+      label.append(input, text);
+      return label;
+    }
+
+    function renderHeader() {
+      headerRow.innerHTML = '<th class="metric">项目</th>';
+      cars.forEach((car, index) => {
+        const th = document.createElement("th");
+        const wrap = document.createElement("div");
+        wrap.className = "car-head";
+
+        const input = document.createElement("input");
+        input.className = "car-title";
+        input.value = car.name;
+        input.setAttribute("aria-label", `第 ${index + 1} 辆车名称`);
+        input.addEventListener("input", () => {
+          cars[index].name = input.value || `方案 ${index + 1}`;
+          renderSummary();
+        });
+
+        const remove = document.createElement("button");
+        remove.className = "icon-btn";
+        remove.type = "button";
+        remove.title = "删除此列";
+        remove.setAttribute("aria-label", "删除此列");
+        remove.textContent = "×";
+        remove.disabled = cars.length <= 1;
+        remove.addEventListener("click", () => {
+          if (cars.length <= 1) return;
+          cars.splice(index, 1);
+          render();
+        });
+
+        wrap.append(input, remove);
+        th.append(wrap);
+        headerRow.append(th);
+      });
+    }
+
+    function renderBody() {
+      const calculations = cars.map(calculate);
+      const totals = calculations.map(item => item.total).filter(total => total > 0);
+      const bestTotal = totals.length ? Math.min(...totals) : null;
+
+      tableBody.innerHTML = "";
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.className = "metric";
+        th.innerHTML = `${row.label}${row.hint ? `<div class="hint">${row.hint}</div>` : ""}`;
+        tr.append(th);
+
+        cars.forEach((car, index) => {
+          const td = document.createElement("td");
+          const calc = calculations[index];
+
+          if (row.type === "input") {
+            td.append(makeMoneyInput(index, row.key));
+          } else if (row.type === "select") {
+            td.append(makeSelect(index, row.key));
+          } else if (row.type === "checkbox") {
+            td.append(makeCheckbox(index, row.key));
+          } else {
+            const value = document.createElement("div");
+            value.className = `value ${row.className || ""}`.trim();
+            value.dataset.carIndex = index;
+            value.dataset.calcKey = row.key;
+            if (row.key === "purchaseTax" && calc.capped) value.classList.add("capped");
+            if (row.key === "total" && bestTotal !== null && calc.total === bestTotal) value.classList.add("best");
+            value.innerHTML = `<span>${currency(calc[row.key])}</span>${row.key === "purchaseTax" && calc.capped ? "<small>封顶</small>" : ""}`;
+            td.append(value);
+          }
+
+          tr.append(td);
+        });
+
+        tableBody.append(tr);
+      });
+    }
+
+    function updateCalculations() {
+      const calculations = cars.map(calculate);
+      const totals = calculations.map(item => item.total).filter(total => total > 0);
+      const bestTotal = totals.length ? Math.min(...totals) : null;
+
+      document.querySelectorAll("[data-calc-key]").forEach(value => {
+        const index = Number(value.dataset.carIndex);
+        const key = value.dataset.calcKey;
+        const calc = calculations[index];
+
+        value.classList.toggle("capped", key === "purchaseTax" && calc.capped);
+        value.classList.toggle("best", key === "total" && bestTotal !== null && calc.total === bestTotal);
+        value.innerHTML = `<span>${currency(calc[key])}</span>${key === "purchaseTax" && calc.capped ? "<small>封顶</small>" : ""}`;
+      });
+
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const ranked = cars
+        .map((car, index) => ({ car, index, calc: calculate(car) }))
+        .sort((a, b) => a.calc.total - b.calc.total);
+
+      summaryList.innerHTML = "";
+      ranked.forEach((item, rank) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="summary-name">${rank + 1}. ${item.car.name || `方案 ${item.index + 1}`}</span>
+          <span class="summary-price">${currency(item.calc.total)}</span>
+          <span class="summary-meta">税 ${currency(item.calc.purchaseTax)} · 补贴 ${currency(item.calc.tradeSubsidy + item.calc.localSubsidy)} · 保险 ${currency(item.calc.insurance)}</span>
+        `;
+        summaryList.append(li);
+      });
+    }
+
+    function render() {
+      renderHeader();
+      renderBody();
+      renderSummary();
+    }
+
+    document.querySelector("#addCarBtn").addEventListener("click", () => {
+      cars.push({ name: `方案 ${String.fromCharCode(65 + cars.length)}`, price: 0, insurance: 0, vehicleType: "nev", purchaseMode: "new", hasJiaxingSubsidy: false });
+      render();
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      cars = structuredClone(defaultCars);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
