@@ -382,6 +382,43 @@
       font-weight: 800;
     }
 
+    .contact-card {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 10;
+      width: 178px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+      backdrop-filter: blur(10px);
+    }
+
+    .contact-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #edf1f5;
+    }
+
+    .contact-title {
+      margin: 8px 0 2px;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .contact-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     @media (max-width: 760px) {
       .topbar {
         align-items: stretch;
@@ -415,6 +452,21 @@
 
       table {
         min-width: 660px;
+      }
+
+      .contact-card {
+        right: 10px;
+        bottom: 10px;
+        width: 132px;
+        padding: 8px;
+      }
+
+      .contact-title {
+        font-size: 13px;
+      }
+
+      .contact-subtitle {
+        font-size: 11px;
       }
     }
   </style>
@@ -467,6 +519,12 @@
       </aside>
     </section>
   </main>
+
+  <aside class="contact-card" aria-label="作者联系方式">
+    <img src="assets/xiaosa_wechat.jpg" alt="作者微信二维码">
+    <p class="contact-title">我的联系方式</p>
+    <p class="contact-subtitle">算的不对？请联系作者更新</p>
+  </aside>
 
   <template id="moneyInputTemplate">
     <div class="money-field">
