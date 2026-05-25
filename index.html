@@ -382,11 +382,40 @@
       font-weight: 800;
     }
 
-    .contact-card {
+    .contact-help {
       position: fixed;
       right: 16px;
       bottom: 16px;
       z-index: 10;
+    }
+
+    .contact-trigger {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid #b9c7d6;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--accent-strong);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+      cursor: help;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .contact-trigger:hover,
+    .contact-trigger:focus-visible {
+      outline: 2px solid rgba(15, 118, 110, 0.28);
+      outline-offset: 3px;
+    }
+
+    .contact-popover {
+      position: absolute;
+      right: 0;
+      bottom: 52px;
       width: 178px;
       padding: 10px;
       border: 1px solid var(--line);
@@ -394,9 +423,23 @@
       background: rgba(255, 255, 255, 0.94);
       box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
       backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
     }
 
-    .contact-card img {
+    .contact-help:hover .contact-popover,
+    .contact-help:focus-within .contact-popover,
+    .contact-help.is-open .contact-popover {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .contact-popover img {
       display: block;
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -454,9 +497,19 @@
         min-width: 660px;
       }
 
-      .contact-card {
+      .contact-help {
         right: 10px;
         bottom: 10px;
+      }
+
+      .contact-trigger {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+      }
+
+      .contact-popover {
+        bottom: 48px;
         width: 132px;
         padding: 8px;
       }
@@ -520,10 +573,13 @@
     </section>
   </main>
 
-  <aside class="contact-card" aria-label="作者联系方式">
-    <img src="assets/xiaosa_wechat.jpg" alt="作者微信二维码">
-    <p class="contact-title">我的联系方式</p>
-    <p class="contact-subtitle">算的不对？请联系作者更新</p>
+  <aside class="contact-help" aria-label="作者联系方式">
+    <button class="contact-trigger" id="contactTrigger" type="button" aria-label="查看作者联系方式" aria-describedby="contactPopover">?</button>
+    <div class="contact-popover" id="contactPopover" role="dialog" aria-label="我的联系方式">
+      <img id="contactQr" data-src="assets/xiaosa_wechat.jpg" alt="作者微信二维码">
+      <p class="contact-title">我的联系方式</p>
+      <p class="contact-subtitle">算的不对？请联系作者更新</p>
+    </div>
   </aside>
 
   <template id="moneyInputTemplate">
@@ -808,6 +864,31 @@
     document.querySelector("#resetBtn").addEventListener("click", () => {
       cars = structuredClone(defaultCars);
       render();
+    });
+
+    const contactHelp = document.querySelector(".contact-help");
+    const contactTrigger = document.querySelector("#contactTrigger");
+    const contactQr = document.querySelector("#contactQr");
+
+    function loadContactQr() {
+      if (!contactQr.src) {
+        contactQr.src = contactQr.dataset.src;
+      }
+    }
+
+    contactHelp.addEventListener("pointerenter", loadContactQr);
+    contactHelp.addEventListener("mouseenter", loadContactQr);
+    contactHelp.addEventListener("mouseover", loadContactQr);
+    contactHelp.addEventListener("focusin", loadContactQr);
+    contactTrigger.addEventListener("click", () => {
+      loadContactQr();
+      contactHelp.classList.toggle("is-open");
+    });
+
+    document.addEventListener("click", event => {
+      if (!contactHelp.contains(event.target)) {
+        contactHelp.classList.remove("is-open");
+      }
     });
 
     render();
